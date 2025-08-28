@@ -25,7 +25,7 @@ pipeline {
                     ./venv/bin/python -m pip install --upgrade pip
 
                     # Installer les dépendances
-                    ./venv/bin/pip install -r requirements.txt
+                    /venv/bin/pip install -r requirements.txt
 
                     # Lancer les tests
                     ./venv/bin/python -m pytest app/tests --disable-warnings -q
