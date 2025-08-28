@@ -9,30 +9,39 @@ pipeline {
             steps {
                 git branch: 'master', credentialsId: 'gith-pat', url: 'https://github.com/abidenabik/flask_helo_jenkins.git'
             }
-        }
-        stage('Install Dependencies & Test') {
-            steps {
-                sh '''
-
-                    # Supprimer l'ancien venv s'il existe
-                    cd $WORKSPACE 
-                    rm -rf venv
-                    ls -la
-                    # Créer un nouvel environnement virtuel
-                    python3 -m venv venv
-                    
-                    # Vérifier que le venv est bien créé
-                    ls -la venv/bin/
-                    
-                    # Utiliser explicitement le pip du venv (chemin absolu)
-                    /var/lib/jenkins/workspace/flask_hello_jenkins_pipeline/venv/bin/python -m pip install --upgrade pip
-                    /var/lib/jenkins/workspace/flask_hello_jenkins_pipeline/venv/bin/pip install -r requirements.txt
-                    
-                    # Exécuter les tests avec le python du venv
-                    /var/lib/jenkins/workspace/flask_hello_jenkins_pipeline/venv/bin/python -m pytest app/tests --disable-warnings -q
-                '''
             }
+    stage('Install Dependencies & Test') {
+        steps {
+            sh '''
+                # Aller dans le workspace de Jenkins
+                cd $WORKSPACE
+                
+                # Supprimer l'ancien venv s'il existe
+                rm -rf venv
+                
+                # Vérifier le contenu du dossier cloné
+                ls -la
+                
+                # Créer un nouvel environnement virtuel
+                python3 -m venv venv
+                
+                # Vérifier que le venv est bien créé
+                ls -la venv/bin/
+                
+                # Mettre à jour pip dans le venv
+                ./venv/bin/python -m pip install --upgrade pip
+                
+                # Installer les dépendances depuis requirements.txt
+                ./venv/bin/pip install -r $WORKSPACE/requirements.txt
+                
+                # Exécuter les tests avec le python du venv
+                ./venv/bin/python -m pytest app/tests --disable-warnings -q
+            '''
         }
+    }
+
+
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
