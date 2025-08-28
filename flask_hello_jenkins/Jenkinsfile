@@ -28,7 +28,7 @@ pipeline {
 
                         # Installer les dépendances
                         ./venv/bin/pip install -r requirements.txt
-
+                        #hmmm
                         # Lancer les tests (vérifie que le dossier app/tests existe)
                         ./venv/bin/python3 -m pytest app/tests --disable-warnings -q
                     '''
@@ -68,3 +68,4 @@ pipeline {
         }
     }
 }
+
