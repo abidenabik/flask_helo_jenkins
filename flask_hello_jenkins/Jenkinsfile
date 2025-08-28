@@ -11,29 +11,29 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies & Test') {
-            steps {
-                dir("${WORKSPACE}") { // <-- forcera Jenkins à exécuter les commandes dans le workspace
-                    sh '''
-                        # Supprimer l'ancien venv s'il existe
-                        rm -rf venv
+    stage('Install Dependencies & Test') {
+        steps {
+            dir("${WORKSPACE}") { // Exécuter les commandes dans le workspace
+                sh '''
+                    # Supprimer l'ancien venv s'il existe
+                    rm -rf venv
 
-                        # Créer un nouvel environnement virtuel
-                        python3 -m venv venv
+                    # Créer un nouvel environnement virtuel
+                    python3 -m venv venv
 
-                        # Mettre à jour pip
-                        ./venv/bin/python -m pip install --upgrade pip
+                    # Mettre à jour pip
+                    ./venv/bin/python -m pip install --upgrade pip
 
-                        # Installer les dépendances
-                        sh '''
-                            ./venv/bin/pip install -r $WORKSPACE/requirements.txt
+                    # Installer les dépendances
+                    ./venv/bin/pip install -r requirements.txt
 
-                        # Lancer les tests
-                        ./venv/bin/python -m pytest app/tests --disable-warnings -q
-                    '''
-                }
+                    # Lancer les tests
+                    ./venv/bin/python -m pytest app/tests --disable-warnings -q
+                '''
             }
         }
+    }
+
 
         stage('Build Docker Image') {
             steps {
