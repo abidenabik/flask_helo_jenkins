@@ -10,41 +10,30 @@ pipeline {
                 git branch: 'master', credentialsId: 'gith-pat', url: 'https://github.com/abidenabik/flask_helo_jenkins.git'
             }
         }
+
         stage('Install Dependencies & Test') {
             steps {
-                sh '''
-                    # Aller dans le workspace de Jenkins
-                    cd $WORKSPACE
-                    
-                    # Vérifier le contenu pour s'assurer que requirements.txt est présent
-                    echo "Contenu du workspace :"
-                    ls -la
-                    
-                    # Supprimer l'ancien venv s'il existe
-                    rm -rf venv
-                    
-                    # Créer un nouvel environnement virtuel
-                    python3 -m venv venv
-                    
-                    # Vérifier que le venv est bien créé
-                    ls -la venv/bin/
-                    
-                    # Mettre à jour pip dans le venv
-                    ./venv/bin/python -m pip install --upgrade pip
-                    
-                    # Installer les dépendances depuis requirements.txt
-                    if [ -f requirements.txt ]; then
+                dir("${WORKSPACE}") { // <-- forcera Jenkins à exécuter les commandes dans le workspace
+                    sh '''
+                        # Supprimer l'ancien venv s'il existe
+                        rm -rf venv
+
+                        # Créer un nouvel environnement virtuel
+                        python3 -m venv venv
+
+                        # Mettre à jour pip
+                        ./venv/bin/python -m pip install --upgrade pip
+
+                        # Installer les dépendances
                         ./venv/bin/pip install -r requirements.txt
-                    else
-                        echo "❌ requirements.txt introuvable !"
-                        exit 1
-                    fi
-                    
-                    # Exécuter les tests
-                    ./venv/bin/python -m pytest app/tests --disable-warnings -q || echo "⚠️ Certains tests ont échoué mais on continue..."
-                '''
+
+                        # Lancer les tests
+                        ./venv/bin/python -m pytest app/tests --disable-warnings -q
+                    '''
+                }
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG $WORKSPACE'
