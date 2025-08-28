@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/abidenabik/flask_hello_jenkins.git'
+                git credentialsId: 'gith-pat', url: 'https://github.com/abidenabik/flask_hello_jenkins.git'
             }
         }
 
