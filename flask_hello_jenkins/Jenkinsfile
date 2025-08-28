@@ -15,7 +15,7 @@ pipeline {
                 sh '''
                     # Supprimer l'ancien venv s'il existe
                     rm -rf venv
-                    
+                    ls -la
                     # Créer un nouvel environnement virtuel
                     python3 -m venv venv
                     
